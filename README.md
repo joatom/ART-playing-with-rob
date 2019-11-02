@@ -11,3 +11,5 @@ The algorithm was used by my brother and my in August 2016 in an art project.
 Put a picture in the pix folder (e.g. Test.jpg). Run ``App.class Test.jpg``.
 The generated pictures will be placed in the pix folder.
 Use small image sizes only due to memory consumption.
+
+Red dots: start/end point of an edge

@@ -15,6 +15,6 @@ import de.joatom.imageProcessor.image.filter.Smoother;
 public class App {
 	public static void main(String[] args) {
 		EdgeProcessor.execute(args[0], "out", 32, 40, Smoother.Type.LINEAR, EdgeDetector.Type.PREWITT, Sharpener.Type.NMS, 90,
-				98, AbstractImage.LayerMode.EDGE_POINTS, false);
+				98, AbstractImage.LayerMode.EDGE_POINTS, true);
 	}
 }

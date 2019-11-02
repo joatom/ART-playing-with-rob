@@ -26,7 +26,8 @@ public class EdgeProcessor {
 
 	private static final Logger LOGGER = LogManager.getLogger(EdgeProcessor.class.getName());
 
-	static String path = "pix/";
+	static String inPath = "pix/";
+	static String outPath = "pix/out/";
 
 	public static void execute(final String picuterName, final String outPostfix, final int numOfClusters, int grayness,
 			Smoother.Type smootherType, EdgeDetector.Type edgeDetectorType, Sharpener.Type sharpenerType,
@@ -36,28 +37,28 @@ public class EdgeProcessor {
 
 			// ### Load Image ###
 
-			LOGGER.info(String.format("Loading... %s", path + picuterName));
-			BufferedImage imgOrg = ImageIO.read(new File(path + picuterName));
+			LOGGER.info(String.format("Loading... %s", inPath + picuterName));
+			BufferedImage imgOrg = ImageIO.read(new File(inPath + picuterName));
 
 			// ### Color processing ###
 
 			// Generate HueImage
 			LOGGER.info("Generating hueImage");
 			HueImage hueImage = new HueImage(imgOrg, picuterName);
-			hueImage.save(path, outPostfix + "_hue");
+			hueImage.save(outPath, outPostfix + "_hue");
 
 			// Generate color clustered Image
 			LOGGER.info(String.format("Generating clustered Image with %d color clusters", numOfClusters));
 			PlainImage clusterdImage = new PlainImage(imgOrg, picuterName);
 			clusterdImage.applyCluster(numOfClusters);
-			clusterdImage.save(path, outPostfix + "_cluster");
+			clusterdImage.save(outPath, outPostfix + "_cluster");
 
 			// Generate clustered GrayImage
 			LOGGER.info(
 					String.format("Convert clustered into gray Image with %d percent brightness/grayness", grayness));
 			GrayImage grayImage = new GrayImage(clusterdImage.getImg(), picuterName, grayness);
 			grayImage.setImageClusterDecorator(clusterdImage.getImageClusterDecorator());
-			grayImage.save(path, outPostfix + "_gray");
+			grayImage.save(outPath, outPostfix + "_gray");
 
 			// ### Edge processing ###
 
@@ -67,7 +68,7 @@ public class EdgeProcessor {
 			// Smooth gray Picture
 			LOGGER.info(String.format("Smooth gray Image using %s", smootherType));
 			grayImage.setPix(Smoother.smooth(grayImage, smootherType));
-			grayImage.save(path, outPostfix + "_smoothed");
+			grayImage.save(outPath, outPostfix + "_smoothed");
 
 			// Apply Canny-Algorithm
 			// https://en.wikipedia.org/wiki/Canny_edge_detector
@@ -88,8 +89,12 @@ public class EdgeProcessor {
 			LOGGER.info(String.format("Draw edges on Image in %s mode", imageLayerMode));
 			grayImage.applyEdgeMap(sharpEdgePoints, width, height, invertOutput, imageLayerMode);
 
-			grayImage.save(path, outPostfix);
+			grayImage.save(outPath, outPostfix);
 
+			LOGGER.info(String.format("Draw combined Image in %s mode", AbstractImage.LayerMode.MIX_ALL));
+			clusterdImage.applyEdgeMap(sharpEdgePoints, width, height, false, AbstractImage.LayerMode.MIX_ALL);
+
+			clusterdImage.save(outPath, outPostfix+"_clustered_edges_MIXED");
 			LOGGER.info("Done!");
 		} catch (IOException e) {
 			LOGGER.info("Bild nicht gefunden");
