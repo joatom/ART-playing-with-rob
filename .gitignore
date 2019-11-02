@@ -13,4 +13,4 @@ buildNumber.properties
 .classpath
 .project
 org.eclipse.*
-/pix/.*
+.DS*
